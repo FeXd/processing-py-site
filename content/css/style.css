@@ -659,6 +659,7 @@ p.exhibition-nav { margin-top: 20px; margin-bottom: 10px; }
 pre { 
 	margin-bottom : 30px;
 	margin-top    : 0;
+	white-space: pre-wrap;
 }
 tr.name-row { height: 60px; }
 td p { margin-top: 0; }

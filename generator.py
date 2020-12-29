@@ -212,7 +212,7 @@ def generate_images(items_dict, to_update, src_dir, processing_py_jar,
             workitem['scriptfile'] = os.path.join(work_dir, workitem['name'] + '.py')
             workitem['imagefile'] = os.path.join(target_image_dir, workitem['name'] + '.png')
             workitem['code']= example['code'] + export_image_postlude.format(imagefile=workitem['imagefile'])
-            with open(workitem['scriptfile'], 'w') as f:
+            with open(workitem['scriptfile'], 'wb') as f:
                 f.write(workitem['code'])
             workitems[workitem['name']] = workitem # We store workitems by name; a little redundant, but handy
 
@@ -339,7 +339,7 @@ def build_reference(reference_dir, to_update, env, build_images):
         target_file_path = os.path.join(target_reference_dir, flat_name + '.html')
         print("Rendering {} to {}... ".format(source_file_path, target_file_path), end='')
         source_item = items_dict[flat_name]
-        with open(target_file_path, 'w') as target_file:
+        with open(target_file_path, 'wb') as target_file:
             rendered = reference_template.render(item=source_item, today=datetime.datetime.now().ctime())
             target_file.write(clean_html(rendered))
             print_success('success!')
@@ -447,7 +447,7 @@ def build_reference_index(reference_dir, env):
     elements.append({'type': 'end-category', 'content': None})
 
     index_template = env.get_template('reference_index_template.jinja')
-    with open(os.path.join('generated/reference', 'index.html'), 'w') as tfile:
+    with open(os.path.join('generated/reference', 'index.html'), 'wb') as tfile:
         tfile.write(clean_html(index_template.render(elements=elements)))
     print_success('success!')
 
@@ -475,7 +475,7 @@ def build_tutorials(env):
         target_tutorial_dir = os.path.join(target_tutorials_dir, tutorial['folder'])
         if not os.path.exists(target_tutorial_dir):
             os.makedirs(target_tutorial_dir)
-        with open(os.path.join(target_tutorial_dir, 'index.html'), 'w') as target_file:
+        with open(os.path.join(target_tutorial_dir, 'index.html'), 'wb') as target_file:
             target_file.write(clean_html(item_template.render(tutorial=tutorial)))
         target_img_dir = os.path.join(target_tutorial_dir, 'imgs')
         if os.path.exists(target_img_dir):
@@ -484,7 +484,7 @@ def build_tutorials(env):
         tutorials.append(tutorial)
         print_success('success!')
     print('Building tutorial index page... ', end='')
-    with open(os.path.join(target_tutorials_dir, 'index.html'), 'w') as target_file:
+    with open(os.path.join(target_tutorials_dir, 'index.html'), 'wb') as target_file:
         target_file.write(clean_html(index_template.render(tutorials=tutorials)))
     print_success('success!')
 
@@ -493,14 +493,14 @@ def build_examples(env):
     if not os.path.exists(target_examples_dir):
         os.makedirs(target_examples_dir)
     examples_template = env.get_template('examples_index.jinja')
-    with open(os.path.join(target_examples_dir, 'index.html'), 'w') as tfile:
+    with open(os.path.join(target_examples_dir, 'index.html'), 'wb') as tfile:
         tfile.write(clean_html(examples_template.render()))
     print_success('success!')
 
 def build_cover(env):
     print("building index.html")
     cover_template = env.get_template('index.jinja')
-    with open(os.path.join('generated', 'index.html'), 'w') as tfile:
+    with open(os.path.join('generated', 'index.html'), 'wb') as tfile:
         tfile.write(clean_html(cover_template.render()))
     print_success('success!')
 

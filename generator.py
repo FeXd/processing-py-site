@@ -156,19 +156,19 @@ def image_worker(base_cmd, workitems):
     current = None
 
     for line in iter(process.stdout.readline, ''):
-        m = re.search(r'^:RUNNING:(.+)$', line)
+        m = re.search(r'^:RUNNING:(.+)$', str(line))
         if m:
             current = workitems[m.group(1)]
             print("{} ... RUNNING: {}".format('Image process', current['name']))
             continue
-        m = re.search(r'^:SUCCESS:$', line)
+        m = re.search(r'^:SUCCESS:$', str(line))
         if m:
             print("{} ... SUCCESS: ".format('Image process'), end='')
             print_success("{} -> {}".format(current['name'], current['imagefile']))
             generated[current['name']] = current
             current = None
             continue
-        m = re.search(r'^:FAILURE:$', line)
+        m = re.search(r'^:FAILURE:$', str(line))
         if m:
             print("{} ... FAILURE: ".format('Image process'), end='')
             print_error(current['name'])
@@ -213,7 +213,7 @@ def generate_images(items_dict, to_update, src_dir, processing_py_jar,
             workitem['imagefile'] = os.path.join(target_image_dir, workitem['name'] + '.png')
             workitem['code']= example['code'] + export_image_postlude.format(imagefile=workitem['imagefile'])
             with open(workitem['scriptfile'], 'wb') as f:
-                f.write(workitem['code'])
+                f.write(str.encode(workitem['code']))
             workitems[workitem['name']] = workitem # We store workitems by name; a little redundant, but handy
 
     if len(workitems) == 0:

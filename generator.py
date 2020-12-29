@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division, with_statement, print_function
 from argparse import ArgumentParser
-from cStringIO import StringIO
+from io import StringIO
 
 import threading
 import subprocess
@@ -286,7 +286,7 @@ def make_convert_hypertext(names_dict):
                 # We don't just do this at the top level because we need to skip the top-level tags
                 s = lxml.html.tostring(child)
                 if s:
-                    text += s
+                    text += str(s)
 
         if _toplevel:
             return text
@@ -314,7 +314,7 @@ def build_reference(reference_dir, to_update, env, build_images):
         items_dict[filename[:-4]] = ReferenceItem(os.path.join(reference_dir, filename))
     items_dict[''] = items_dict['blank'] # Special case, for blank links
 
-    print_success('{} stale files to be updated'.format(len(to_update)))
+    print_success('{} stale files to be updated'.format(len(list(to_update))))
 
     target_img_dir = os.path.join(target_reference_dir, 'imgs')
     if not os.path.exists(target_reference_dir):

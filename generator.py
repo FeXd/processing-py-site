@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import division, with_statement, print_function
+
 from argparse import ArgumentParser
 from io import StringIO
 
@@ -148,7 +148,7 @@ exit()
 def image_worker(base_cmd, workitems):
 
     workitems_cmdline_param = ['{}:{}:{}'.format(ex['name'], ex['scriptfile'], ex['imagefile']) \
-            for ex in workitems.itervalues()]
+            for ex in workitems.values()]
     process = subprocess.Popen(base_cmd + workitems_cmdline_param, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT, bufsize=1)
     generated = {}
@@ -228,11 +228,11 @@ def generate_images(items_dict, to_update, src_dir, processing_py_jar,
     generated, failed = image_worker(base_cmd, workitems) 
 
     print("Generated images:")
-    for workitem in generated.itervalues():
+    for workitem in generated.values():
         print("    ", workitem['imagefile'])
 
     print("Failed examples:")
-    for workitem in failed.itervalues():
+    for workitem in failed.values():
         print("    ", workitem['name'])
     
     print("Done rendering examples.")
@@ -540,12 +540,12 @@ def build(build_images, to_update):
 
 def test():
     print_header("Testing")
-    import random, SimpleHTTPServer, SocketServer, webbrowser
+    import random, http.server, socketserver, webbrowser
     socket = random.randrange(8000, 8999)
     address = "http://localhost:{}".format(socket)
     print("Serving on {}".format(address)) 
     os.chdir(target_dir)
-    httpd = SocketServer.TCPServer(("localhost", socket), SimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd = socketserver.TCPServer(("localhost", socket), http.server.SimpleHTTPRequestHandler)
     webbrowser.open(address)
     httpd.serve_forever()
 
@@ -555,11 +555,11 @@ def get_flat_names_to_update(all_, random, files):
     if files:
         # print_error() returns None, which is falsy, and so can be used to filter!
         # ...this is silly
-        files = filter(lambda f: f if f.endswith('.xml') else print_error('"{}" is not a valid xml file!'.format(f)), files)
-        return map(lambda f: os.path.basename(f)[:-4], files)
+        files = [f for f in files if f if f.endswith('.xml') else print_error('"{}" is not a valid xml file!'.format(f))]
+        return [os.path.basename(f)[:-4] for f in files]
 
     if random:
-        return [map(lambda f: f[:-4], filter(lambda f: f.endswith('.xml'), os.listdir(reference_dir)))[0]]
+        return [[f[:-4] for f in [f for f in os.listdir(reference_dir) if f.endswith('.xml')]][0]]
 
     if not all_:
         def should_be_updated(f):
@@ -571,13 +571,13 @@ def get_flat_names_to_update(all_, random, files):
                 return True
             return os.path.getmtime(src_f) > os.path.getmtime(target_f)
         
-        files = filter(should_be_updated, os.listdir(reference_dir))
+        files = list(filter(should_be_updated, os.listdir(reference_dir)))
     else:
-        files = filter(lambda f: f.endswith('.xml'), os.listdir(reference_dir))
+        files = [f for f in os.listdir(reference_dir) if f.endswith('.xml')]
 
     # skip files that match patterns in to_skip_patterns
     files = [f for f in files if not(any([re.search(patt, f) for patt in to_skip_patterns]))]
-    files = map(lambda f: f[:-4], files)
+    files = [f[:-4] for f in files]
     return files
 
 if __name__ == '__main__':

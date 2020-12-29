@@ -555,8 +555,8 @@ def get_flat_names_to_update(all_, random, files):
     if files:
         # print_error() returns None, which is falsy, and so can be used to filter!
         # ...this is silly
-        files = [f for f in files if f if f.endswith('.xml') else print_error('"{}" is not a valid xml file!'.format(f))]
-        return [os.path.basename(f)[:-4] for f in files]
+        files = filter(lambda f: f if f.endswith('.xml') else print_error('"{}" is not a valid xml file!'.format(f)), files)
+        return map(lambda f: os.path.basename(f)[:-4], files)
 
     if random:
         return [[f[:-4] for f in [f for f in os.listdir(reference_dir) if f.endswith('.xml')]][0]]
